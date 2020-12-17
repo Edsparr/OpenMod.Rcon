@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Rcon\**" />
+    <EmbeddedResource Remove="Rcon\**" />
+    <None Remove="Rcon\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="OpenMod.Core" Version="2.3.8" />
+    <PackageReference Include="Unclassified.AsyncTcpClient" Version="1.0.2" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\OpenMod.Rcon.Api\OpenMod.Rcon.Api.csproj" />
+  </ItemGroup>
+</Project>
