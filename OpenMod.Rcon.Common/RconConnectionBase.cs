@@ -65,13 +65,14 @@ namespace OpenMod.Rcon.Common
 
         public async Task Start()
         {
-            tcpClient.AutoReconnect = false; //Incase they did not register with it.
 
             tcpClient.ReceivedCallback = ReceivedAsync;
             tcpClient.ClosedCallback = (client, reconnected) => Disconnected?.Invoke(this);
             var task = Task.Run(async () =>
             {
                 await Task.WhenAny(tcpClient.ClosedTask, Task.Delay(-1, closedTaskCallback.Item1.Token));
+                if (!tcpClient.ClosedTask.IsCompleted) //Incase it got cancelled instead of completed because the cancel means we don't listen for ClientDisconnect anymore.
+                    return;
                 await Disconnected?.Invoke(this);
 
             });
