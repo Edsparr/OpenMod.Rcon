@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Autofac;
+using Microsoft.Extensions.Configuration;
 using OpenMod.Rcon.Api;
 using OpenMod.Rcon.Api.Models;
+using OpenMod.Rcon.Common;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -10,19 +12,18 @@ using System.Threading.Tasks;
 
 namespace OpenMod.Rcon
 {
-    public class OpenModRconHost : IRconHost
+    public class OpenModRconHost : RconHostBase
     {
-        public RconHostInfo HostInfo { get; }
-        public IReadOnlyCollection<IRconConnection> Connections { get; }
-
-        public Task Start()
+        public OpenModRconHost(ILifetimeScope scope, IConfiguration configuration) : base(scope, configuration)
         {
-            throw new NotImplementedException();
+
         }
 
-        public Task Stop()
+        protected override void RegisterConnection(ContainerBuilder builder)
         {
-            throw new NotImplementedException();
+            builder.RegisterType<OpenModRconConnection>()
+                .As<IRconConnection>()
+                .InstancePerLifetimeScope();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace OpenMod.Rcon.Api.Packets
         public const string ServerDataExecuteCommandPacket = "SERVERDATA_EXECCOMMAND";
         public const string ServerDataResponsePacket = "SERVERDATA_RESPONSE_VALUE";
 
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Type { get; set; }
         public string Body { get; set; }
     }

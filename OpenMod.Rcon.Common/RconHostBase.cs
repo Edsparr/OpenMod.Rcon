@@ -5,6 +5,7 @@ using OpenMod.Rcon.Api;
 using OpenMod.Rcon.Api.Models;
 using OpenMod.Rcon.Api.Packets;
 using OpenMod.Rcon.Common.Packets;
+using OpenMod.Rcon.Common.Tcp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -76,10 +77,9 @@ namespace OpenMod.Rcon.Common
 
         protected virtual void RegisterConnectionTcpClient(ContainerBuilder builder)
         {
-            builder.RegisterInstance(new AsyncTcpClient()
-            {
-                AutoReconnect = false,
-            });
+            builder.RegisterType<AsyncTcpClientWrapper>()
+                .As<IAsyncTcpClient>()
+                .InstancePerLifetimeScope();
         }
 
         protected virtual void RegisterPacketSerializer(ContainerBuilder builder)

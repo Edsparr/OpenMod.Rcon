@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 
 namespace OpenMod.Rcon.Api
 {
-    public interface IRconConnection : IDisposable
+    public interface IRconConnection
     {
         Func<IRconConnection, Task> Disconnected { get; set; }
-        IRconHost Host { get; }
-        AuthLevel AuthLevel { get; }
+        AuthLevel AuthLevel { get; set; }
 
         Task Start();
 
