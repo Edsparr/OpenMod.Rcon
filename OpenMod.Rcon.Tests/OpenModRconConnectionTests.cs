@@ -105,6 +105,30 @@ namespace OpenMod.Rcon.Common.Tests
 
         }
 
+        [TestMethod]
+        public async Task ExecuteCommand_ShouldThrowException_IfSuccessful()
+        {
+            int packetId = 1;
+
+            await tcpClient.ReceivedMock(await packetSerializer.Serialize(new RconPacket()
+            {
+                Body = "quit",
+                Id = packetId,
+                Type = RconPacket.ServerDataExecuteCommandPacket
+            }));
+
+            Assert.IsTrue(this.tcpClient.BytesSent.Count == 1, "{count} packets was found instead of 1!", tcpClient.BytesSent.Count);
+
+            using var messagePacketStream = new MemoryStream(tcpClient.BytesSent.ElementAt(0));
+
+            var messagePacket = await packetSerializer.Deserialize(messagePacketStream);
+
+            Assert.AreEqual(messagePacket.Id, packetId);
+            Assert.AreEqual(messagePacket.Type, RconPacket.ServerDataResponsePacket);
+            Assert.AreEqual(messagePacket.Body, "Not authorized!");
+
+        }
+
         private async Task Authorize(int packetId, string password)
         {
             using var authPacket = await packetSerializer.Serialize(new RconPacket()

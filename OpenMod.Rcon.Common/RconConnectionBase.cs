@@ -129,6 +129,17 @@ namespace OpenMod.Rcon.Common
 
         protected virtual async Task ProcessExecuteCommand(RconPacket packet)
         {
+            if(AuthLevel == AuthLevel.Unauthorized)
+            {
+                await SendPacket(new RconPacket()
+                {
+                    Id = packet.Id,
+                    Body = "Not authorized!",
+                    Type = RconPacket.ServerDataResponsePacket
+                });
+                return;
+            }
+
             var commandActor = new RconCommandActor(this, packet.Id);
             var args = ArgumentsParser.ParseArguments(packet.Body);
 
