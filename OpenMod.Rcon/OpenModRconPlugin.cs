@@ -5,7 +5,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OpenMod.Core.Plugins;
 using OpenMod.API.Plugins;
-
+using OpenMod.Rcon.Api;
 
 [assembly: PluginMetadata("OpenMod.Rcon", DisplayName = "OpenMod Rcon")]
 namespace OpenMod.Rcon
@@ -15,29 +15,35 @@ namespace OpenMod.Rcon
         private readonly IConfiguration m_Configuration;
         private readonly IStringLocalizer m_StringLocalizer;
         private readonly ILogger<OpenModRconPlugin> m_Logger;
-
+        
+        private readonly IRconHost rconHost;
+        
         public OpenModRconPlugin(
             IConfiguration configuration, 
             IStringLocalizer stringLocalizer,
-            ILogger<OpenModRconPlugin> logger, 
+            ILogger<OpenModRconPlugin> logger,
+            IRconHost rconHost,
             IServiceProvider serviceProvider) : base(serviceProvider)
         {
             m_Configuration = configuration;
             m_StringLocalizer = stringLocalizer;
+            this.rconHost = rconHost;
             m_Logger = logger;
             
         }
 
-        protected override Task OnLoadAsync()
+        protected override async Task OnLoadAsync()
         {
             m_Logger.LogInformation(m_StringLocalizer["plugin_events:plugin_start"]);
-            return Task.CompletedTask;
+
+            await rconHost.Start();
         }
 
-        protected override Task OnUnloadAsync()
+        protected override async Task OnUnloadAsync()
         {
             m_Logger.LogInformation(m_StringLocalizer["plugin_events:plugin_stop"]);
-            return Task.CompletedTask;
+
+            await rconHost.Stop();
         }
     }
 }

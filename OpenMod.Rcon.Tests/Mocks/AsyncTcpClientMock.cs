@@ -3,48 +3,54 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OpenMod.Rcon.Common.Tests.Mocks
 {
     public class AsyncTcpClientMock : IAsyncTcpClient //hehe, got a feeling im doing something wrong
     {
-        public Func<byte[], Task> Received { get; set; }
-        public Func<IAsyncTcpClient, Task> Disconnected { get; set; }
+		private Stream stream = new MemoryStream();
 
-        public ICollection<byte[]> BytesSent { get; } = new List<byte[]>();
+		public bool IsConnected => true;
 
-        public void Dispose()
+		public Stream ReceivedStream { get; set; } = new MemoryStream();
+
+		public Func<IAsyncTcpClient, Task> Closed { get; set; }
+
+		public Func<IAsyncTcpClient, ArraySegment<byte>, Task> Received { get; set; }
+		public Func<IAsyncTcpClient, Task> Disconnected { get; set; }
+
+		public Task Start()
+		{
+			return Task.CompletedTask;
+		}
+
+		public Task Stop(CancellationToken cancellationToken = default) => DisposeAsync(cancellationToken).AsTask();
+
+
+		public async Task ReceivedMock(Stream stream)
         {
-            Stop();
-        }
+			var buffer = new byte[stream.Length];
+			var length = await stream.ReadAsync(buffer, 0, buffer.Length);
 
-        public async Task Send(Stream stream)
-        {
-            var buffer = new byte[stream.Length];
+			await ReceivedStream.WriteAsync(buffer, 0, length);
 
-            await stream.ReadAsync(buffer, 0, buffer.Length);
+		}
 
-            BytesSent.Add(buffer);
-        }
+		public async Task Send(byte[] data, CancellationToken cancellationToken = default)
+		{
 
-        public async Task ReceivedMock(Stream stream)
-        {
-            var buffer = new byte[stream.Length];
+			await stream.WriteAsync(data, 0, data.Length, cancellationToken);
+		}
 
-            await stream.ReadAsync(buffer, 0, buffer.Length);
 
-            await Received?.Invoke(buffer);
-        }
+		public ValueTask DisposeAsync(CancellationToken cancellationToken = default)
+		{
+			return new ValueTask();
+		}
 
-        public Task Start()
-        {
-            return Task.CompletedTask;
-        }
+		public ValueTask DisposeAsync() => DisposeAsync(default);
 
-        public void Stop()
-        {
-
-        }
-    }
+	}
 }

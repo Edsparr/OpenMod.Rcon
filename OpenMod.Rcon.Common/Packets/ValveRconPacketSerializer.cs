@@ -25,7 +25,9 @@ namespace OpenMod.Rcon.Common.Packets
             var sizeBuffer = new byte[sizeof(int)];
             await stream.ReadAsync(sizeBuffer, 0, sizeof(int));
 
-            var packetBuffer = new byte[BitConverter.ToInt32(sizeBuffer, 0)];
+            var size = BitConverter.ToInt32(sizeBuffer, 0);
+
+            var packetBuffer = new byte[size];
             await stream.ReadAsync(packetBuffer, 0, packetBuffer.Length);
 
             packet.Id = BitConverter.ToInt32(packetBuffer, 0);
@@ -34,32 +36,26 @@ namespace OpenMod.Rcon.Common.Packets
 
             packet.Type = packetType;
 
-            packet.Body = Encoding.ASCII.GetString(packetBuffer, sizeof(int) * 2, packetBuffer.Length - sizeof(int) * 2 - sizeof(byte));
-            //Total size - the first 2 ints and minus the last empty ascii string
+            packet.Body = Encoding.ASCII.GetString(packetBuffer, sizeof(int) * 2, packetBuffer.Length - sizeof(int) * 2 - sizeof(byte) * 2);
 
             return packet;
         }
 
-        public Task<Stream> Serialize(RconPacket packet)
+        public byte[] Serialize(RconPacket packet)
         {
 
             if (!TryGetPacketTypeIdentifier(packet.Type, out var typeId))
                 throw new ArgumentException($"Type: {packet.Type} not recognized!");
 
-            var bodyBytes = Encoding.ASCII.GetBytes(packet.Body ?? string.Empty);
-            var result = new byte[sizeof(int) + sizeof(int) + sizeof(int) + bodyBytes.Length + 1];
+            var body = Encoding.UTF8.GetBytes(packet.Body + "\0"); // add null string terminator
+            var buffer = new byte[sizeof(int) * 3 + body.Length + 1]; // 12 bytes for Length, Id and Type
 
-            if (result.Length > 4096)
-                throw new ArgumentException("Packet is bigger than 4096!");
+            BitConverter.GetBytes(buffer.Length - sizeof(int)).CopyTo(buffer, 0); //Size 
+            BitConverter.GetBytes(packet.Id).CopyTo(buffer, sizeof(int));
+            BitConverter.GetBytes(typeId).CopyTo(buffer, sizeof(int) * 2);
+            body.CopyTo(buffer, sizeof(int) * 3);
 
-            BitConverter.GetBytes(result.Length - sizeof(int)).CopyTo(result, 0); //The packet size int is not included in packet size.
-            BitConverter.GetBytes(packet.Id).CopyTo(result, sizeof(int));
-            BitConverter.GetBytes(typeId).CopyTo(result, sizeof(int) * 2);
-
-            bodyBytes.CopyTo(result, sizeof(int) * 3); //Will never be out of bounds,
-            //The last byte is already put as 0s so no need to put 0 in there.
-
-            return Task.FromResult((Stream)new MemoryStream(result));
+            return buffer;
         }
 
         private bool TryGetNativePacketTypeIdentifier(int num, out string type)

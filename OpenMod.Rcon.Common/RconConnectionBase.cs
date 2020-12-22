@@ -12,7 +12,6 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Unclassified.Net;
 
 namespace OpenMod.Rcon.Common
 {
@@ -40,10 +39,8 @@ namespace OpenMod.Rcon.Common
 
         public async Task SendPacket(Api.Packets.RconPacket packet)
         {
-            using (var packetStream = await packetSerializer.Serialize(packet))
-            {
-                await tcpClient.Send(packetStream);
-            }
+            await tcpClient.Send(packetSerializer.Serialize(packet));
+
         }
 
         public async Task SendResponse(int originalPacketId, RconPacket packet)
@@ -52,7 +49,7 @@ namespace OpenMod.Rcon.Common
             await SendPacket(packet);
         }
 
-        public async Task SendResponse(int originalPacketId, string message, Color color)
+        public virtual async Task SendResponse(int originalPacketId, string message, Color color)
         {
             await SendResponse(originalPacketId, new RconPacket()
             {
@@ -65,26 +62,30 @@ namespace OpenMod.Rcon.Common
         {
 
             tcpClient.Received = Received;
-            tcpClient.Disconnected = (client) => Disconnected?.Invoke(this);
+            tcpClient.Closed = (client) => Disconnected?.Invoke(this);
 
             await tcpClient.Start();
         }
 
-        
-        
-        protected virtual async Task Received(byte[] buffer)
+
+
+        protected virtual async Task Received(IAsyncTcpClient client, ArraySegment<byte> bytes)
         {
-            using(var stream = new MemoryStream(buffer)) //Meh, I tried atleast.
+            using (var stream = new MemoryStream(bytes.Array))
             {
                 try
                 {
                     var packet = await packetSerializer.Deserialize(stream);
+
+                    logger.LogDebug("Received packet: id:{id} type:{type}, body:{body}", packet.Id, packet.Type, packet.Body);
+                    
                     await ProcessPacket(packet);
                 }
                 catch (Exception ex)
                 {
-                    logger.LogDebug(ex, "Error while procesing packet. Byte count: {count}", buffer.Length);
+                    logger.LogError(ex, "Error while procesing packet. Byte count: {count}", bytes.Count);
                 }
+
             }
         }
 
@@ -102,20 +103,21 @@ namespace OpenMod.Rcon.Common
         }
 
         protected virtual async Task ProcessAuthorizationPacket(RconPacket packet)
-        {
-            
+        {            
             bool successfull = host.HostInfo.Password == packet.Body;
+            string body = default;
             int id = -1;
             if (successfull)
             {
                 AuthLevel = AuthLevel.Authorized;
                 id = packet.Id;
+                body = "Logged in.";
             }
 
             await SendPacket(new RconPacket()
             {
                 Id = packet.Id,
-                Body = default,
+                Body = body,
                 Type = RconPacket.ServerDataResponsePacket
             });
 
@@ -137,6 +139,7 @@ namespace OpenMod.Rcon.Common
                     Body = "Not authorized!",
                     Type = RconPacket.ServerDataResponsePacket
                 });
+
                 return;
             }
 

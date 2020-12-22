@@ -4,6 +4,7 @@ using OpenMod.Rcon.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OpenMod.Rcon.Tests.Mocks
@@ -18,12 +19,12 @@ namespace OpenMod.Rcon.Tests.Mocks
 
         public IReadOnlyCollection<IRconConnection> Connections { get; } = new List<IRconConnection>();
 
-        public Task Start()
+        public Task Start(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task Stop()
+        public Task Stop(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

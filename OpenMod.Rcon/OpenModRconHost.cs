@@ -1,5 +1,8 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using OpenMod.API.Ioc;
+using OpenMod.API.Prioritization;
 using OpenMod.Rcon.Api;
 using OpenMod.Rcon.Api.Models;
 using OpenMod.Rcon.Common;

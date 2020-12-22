@@ -10,8 +10,9 @@ namespace OpenMod.Rcon.Api
 {
     public interface IRconConnection
     {
-        Func<IRconConnection, Task> Disconnected { get; set; }
         AuthLevel AuthLevel { get; set; }
+
+        Func<IRconConnection, Task> Disconnected { get; set; }
 
         Task Start();
 

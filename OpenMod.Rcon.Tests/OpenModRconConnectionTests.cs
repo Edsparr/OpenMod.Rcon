@@ -12,7 +12,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Unclassified.Net;
 
 namespace OpenMod.Rcon.Common.Tests
 {
@@ -27,7 +26,7 @@ namespace OpenMod.Rcon.Common.Tests
         private OpenModRconConnection connection;
 
 
-        [TestInitialize]
+        /*[TestInitialize]
         public void Initialize()
         {
             tcpClient = new AsyncTcpClientMock();
@@ -142,7 +141,6 @@ namespace OpenMod.Rcon.Common.Tests
 
         }
 
-
-
+        */
     }
 }

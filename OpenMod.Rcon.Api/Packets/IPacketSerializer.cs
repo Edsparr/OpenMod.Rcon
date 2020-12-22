@@ -8,7 +8,7 @@ namespace OpenMod.Rcon.Api.Packets
 {
     public interface IPacketSerializer
     {
-        Task<Stream> Serialize(RconPacket packet);
+        byte[] Serialize(RconPacket packet);
         Task<RconPacket> Deserialize(Stream stream);
     }
 }

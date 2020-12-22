@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenMod.Rcon.Api;
 using OpenMod.Rcon.Api.Models;
@@ -15,18 +16,21 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Unclassified.Net;
 
 namespace OpenMod.Rcon.Common
 {
     public abstract class RconHostBase : IRconHost
     {
         private readonly ILifetimeScope scope;
+        private readonly ILogger<RconHostBase> logger;
         private readonly IConfiguration configuration;
         
-        public RconHostBase(ILifetimeScope scope, IConfiguration configuration)
+        public RconHostBase(ILifetimeScope scope,
+            ILogger<RconHostBase> logger,
+            IConfiguration configuration)
         {
             this.scope = scope;
+            this.logger = logger;
             this.configuration = configuration;
 
         }
@@ -38,29 +42,38 @@ namespace OpenMod.Rcon.Common
         public IReadOnlyCollection<IRconConnection> Connections => connections.Select(c => c.Item2).ToList(); //For casting.
 
 
-        public async Task Start()
+        public async Task Start(CancellationToken cancellationToken = default)
         {
+
+            if (HostInfo.Password.Equals("ChangeThisToEnableRcon", StringComparison.InvariantCultureIgnoreCase))
+                throw new ArgumentException($"Current password is the default password! Change this to enable Rcon and prevent others from connecting to Rcon.");
+
             listener = new AsyncTcpListener()
             {
-                ClientConnectedCallback = ClientConnected,
-                IPAddress = IPAddress.IPv6Any,
+                ClientConnected = ClientConnected,
+                Address = IPAddress.IPv6Any,
                 Port = HostInfo.Port
             };
-            await listener.RunAsync();
+
+            await listener.Start(cancellationToken);
         }
-        public Task Stop()
+        public async Task Stop(CancellationToken cancellationToken = default)
         {
-            listener.Stop(true);
-            listener = null;
+            await listener.Stop(cancellationToken);
+            
 
-            return Task.CompletedTask;
+            foreach (var item in connections)
+                await item.Item1.DisposeAsync(); //LifetimeScope.Dispose() -> IRconConnection.Dispose() & all dependencies.
+
+            connections.Clear();
         }
 
-        protected virtual async Task ClientConnected(TcpClient arg)
+        protected virtual async Task ClientConnected(IAsyncTcpClient arg)
         {
             var connectionScope = scope.BeginLifetimeScope(builder => 
             {
-                RegisterConnectionTcpClient(builder);
+                builder.RegisterInstance(arg);
+
                 RegisterPacketSerializer(builder);
                 RegisterConnection(builder);
             });
@@ -72,14 +85,17 @@ namespace OpenMod.Rcon.Common
             connections.Add((connectionScope, connection));
 
             await connection.Start();
+
+            logger.LogDebug("Rcon client connected.");
         }
 
 
-        protected virtual void RegisterConnectionTcpClient(ContainerBuilder builder)
+        private async Task ClientDisconnected(IRconConnection connection)
         {
-            builder.RegisterType<AsyncTcpClientWrapper>()
-                .As<IAsyncTcpClient>()
-                .InstancePerLifetimeScope();
+            logger.LogDebug($"Rcon user disconnected.");
+            var item = connections.SingleOrDefault(c => c.Item2 == connection);
+            await item.Item1.DisposeAsync();
+            connections.Remove(item);
         }
 
         protected virtual void RegisterPacketSerializer(ContainerBuilder builder)
@@ -90,12 +106,5 @@ namespace OpenMod.Rcon.Common
         }
 
         protected abstract void RegisterConnection(ContainerBuilder builder);
-
-        private async Task ClientDisconnected(IRconConnection connection)
-        {
-            var item = connections.SingleOrDefault(c => c.Item2 == connection);
-            await item.Item1.DisposeAsync();
-            connections.Remove(item);
-        }
     }
 }
