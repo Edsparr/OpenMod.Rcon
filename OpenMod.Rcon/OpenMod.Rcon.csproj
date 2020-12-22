@@ -8,7 +8,7 @@
     <AssemblyName>OpenMod.Rcon</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateNugetPackage>true</GenerateNugetPackage>
-    <Product>My OpenMod Plugin</Product>
+    <Product>OpenMod Rcon plugin</Product>
   </PropertyGroup>
 
   <ItemGroup>
