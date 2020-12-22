@@ -7,22 +7,22 @@ using OpenMod.Core.Plugins;
 using OpenMod.API.Plugins;
 using OpenMod.Rcon.Api;
 
-[assembly: PluginMetadata("OpenMod.Rcon", DisplayName = "OpenMod Rcon")]
-namespace OpenMod.Rcon
+[assembly: PluginMetadata("OpenMod.Rcon.Rocket", DisplayName = "Legacy Rocketmod Rcon")]
+namespace OpenMod.Rcon.Rocket
 {
-    public class OpenModRconPlugin : OpenModUniversalPlugin
+    public class RocketRconPlugin : OpenModUniversalPlugin
     {
         private readonly IConfiguration m_Configuration;
         private readonly IStringLocalizer m_StringLocalizer;
-        private readonly ILogger<OpenModRconPlugin> m_Logger;
+        private readonly ILogger<RocketRconPlugin> m_Logger;
         
-        private readonly IOpenModRconHost rconHost;
+        private readonly IRocketRconHost rconHost;
         
-        public OpenModRconPlugin(
+        public RocketRconPlugin(
             IConfiguration configuration, 
             IStringLocalizer stringLocalizer,
-            ILogger<OpenModRconPlugin> logger,
-            IOpenModRconHost rconHost,
+            ILogger<RocketRconPlugin> logger,
+            IRocketRconHost rconHost,
             IServiceProvider serviceProvider) : base(serviceProvider)
         {
             m_Configuration = configuration;

@@ -13,7 +13,7 @@ namespace OpenMod.Rcon
 {
     public class OpenModRconConnection : RconConnectionBase
     {
-        public OpenModRconConnection(IRconHost host,
+        public OpenModRconConnection(IOpenModRconHost host,
             IPacketSerializer packetSerializer, 
             IAsyncTcpClient tcpClient, 
             ICommandExecutor commandExecutor,

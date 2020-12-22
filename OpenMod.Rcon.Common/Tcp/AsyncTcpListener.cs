@@ -23,7 +23,8 @@ namespace OpenMod.Rcon.Common.Tcp
 		public IPAddress Address { get; set; } = IPAddress.IPv6Any;
 		public int Port { get; set; }
 
-		public Func<IAsyncTcpClient, Task> ClientConnected { get; set; }
+		public Func<TcpClient, Task<IAsyncTcpClient>> ClientConnected { get; set; }
+
 
 		public Task Start(CancellationToken cancellationToken = default)
 		{
@@ -34,16 +35,14 @@ namespace OpenMod.Rcon.Common.Tcp
 				throw new ArgumentOutOfRangeException(nameof(Port));
 
 			isStopped = false;
-			
-			listener = new TcpListener(Address, Port); 
 
-			cancellationToken.Register(listener.Stop); //Stop is fire and forget.
+			listener = TcpListener.Create(Port); //new TcpListener(Address, Port); 
+
+			cancellationToken.Register(() => { isStopped = true; listener.Stop();  }); //Stop is fire and forget.
 
 			var task = Task.Run(async () =>
 			{
-				Console.WriteLine("Does this print??? Started");
 				listener.Start();
-				Console.WriteLine("Stuck");
 
 				var clients = new List<IAsyncTcpClient>();
 
@@ -65,15 +64,10 @@ namespace OpenMod.Rcon.Common.Tcp
 							// Listener was stopped
 							break;
 						}
-						catch(Exception ex)
-                        {
-							Console.WriteLine(ex);
-                        }
 					}
 				}
 				finally
 				{
-					this.isStopped = true;
 					await Task.WhenAll(clients.Select(c => c.Stop()));
 					clients.Clear();
 
@@ -92,7 +86,7 @@ namespace OpenMod.Rcon.Common.Tcp
 				throw new InvalidOperationException("The listener has not started yet.");
 			if (isStopped)
 				throw new InvalidOperationException("The listener is already stopped!");
-
+			isStopped = true;
 			listener.Stop();
 
 			await Task.WhenAny(listenerTask, Task.Delay(-1, cancellationToken));
@@ -100,9 +94,7 @@ namespace OpenMod.Rcon.Common.Tcp
 
 		protected virtual async Task<IAsyncTcpClient> ClientConnect(TcpClient tcpClient)
 		{
-			var client = new AsyncTcpClient(tcpClient);
-
-			await ClientConnected?.Invoke(client);
+			var client = await ClientConnected?.Invoke(tcpClient);
 			return client;
 		}
 

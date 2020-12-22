@@ -2,5 +2,5 @@
 # You can delete this file if you do not need a configuration
 
 hostInfo:
-  port: 27018
+  port: 27019
   password: ChangeThisToEnableRcon

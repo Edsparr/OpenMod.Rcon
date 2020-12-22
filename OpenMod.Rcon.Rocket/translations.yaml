@@ -2,5 +2,5 @@
 # You can delete this file if you do not need translations
 
 plugin_events:
-  plugin_start: "OpenMod Rcon implementation loaded."
-  plugin_stop: "OpenMod Rcon implementation unloaded"
+  plugin_start: "RocketMod Rcon legacy implementation loaded."
+  plugin_stop: "RocketMod Rcon legacy implementation unloaded"

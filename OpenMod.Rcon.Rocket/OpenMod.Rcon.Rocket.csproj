@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageLicenseExpression>EUPL-1.2</PackageLicenseExpression>
+    <PackageTags>openmod openmod-plugin universal</PackageTags>
+    <RootNamespace>OpenMod.Rcon.Rocket</RootNamespace>
+    <AssemblyName>OpenMod.Rcon.Rocket</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateNugetPackage>true</GenerateNugetPackage>
+    <Product>OpenMod's Rocket legacy implementation</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenMod.Core" Version="2.3.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="config.yaml" />
+    <EmbeddedResource Include="translations.yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OpenMod.Rcon.Common\OpenMod.Rcon.Common.csproj" />
+  </ItemGroup>
+
+</Project>

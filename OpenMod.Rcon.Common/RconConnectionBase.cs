@@ -17,7 +17,7 @@ namespace OpenMod.Rcon.Common
 {
     public abstract class RconConnectionBase : IRconConnection
     {
-        private readonly IRconHost host;
+        protected readonly IRconHost host;
         private readonly IPacketSerializer packetSerializer;
         private readonly IAsyncTcpClient tcpClient;
         private readonly ICommandExecutor commandExecutor;
@@ -39,6 +39,7 @@ namespace OpenMod.Rcon.Common
 
         public async Task SendPacket(Api.Packets.RconPacket packet)
         {
+            logger.LogDebug("Sending packet: id:{id}, type:{type} and body:{body}", packet.Id, packet.Type, packet.Body);
             await tcpClient.Send(packetSerializer.Serialize(packet));
 
         }
@@ -58,7 +59,7 @@ namespace OpenMod.Rcon.Common
             });
         }
 
-        public async Task Start()
+        public virtual async Task Start()
         {
 
             tcpClient.Received = Received;
@@ -71,13 +72,13 @@ namespace OpenMod.Rcon.Common
 
         protected virtual async Task Received(IAsyncTcpClient client, ArraySegment<byte> bytes)
         {
-            using (var stream = new MemoryStream(bytes.Array))
+            using (var stream = new MemoryStream(bytes.Array, bytes.Offset, bytes.Count))
             {
                 try
                 {
                     var packet = await packetSerializer.Deserialize(stream);
 
-                    logger.LogDebug("Received packet: id:{id} type:{type}, body:{body}", packet.Id, packet.Type, packet.Body);
+                    logger.LogDebug("Received packet: id:{id}, type:{type} and body:{body}", packet.Id, packet.Type, packet.Body);
                     
                     await ProcessPacket(packet);
                 }
@@ -102,9 +103,11 @@ namespace OpenMod.Rcon.Common
             }
         }
 
+        protected bool PasswordCheck(string password) => host.HostInfo.Password == password;
+
         protected virtual async Task ProcessAuthorizationPacket(RconPacket packet)
-        {            
-            bool successfull = host.HostInfo.Password == packet.Body;
+        {
+            bool successfull = PasswordCheck(packet.Body);
             string body = default;
             int id = -1;
             if (successfull)

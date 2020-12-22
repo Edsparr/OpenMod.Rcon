@@ -71,16 +71,12 @@ namespace OpenMod.Rcon.Common.Tcp
 					}
 
 
-
-					Console.WriteLine(readLength);
-
 					if (readLength <= 0)
 					{
 						await Closed?.Invoke(this);
 						TcpClient.Close();
 						return;
 					}
-
 
 					await Received?.Invoke(this, new ArraySegment<byte>(buffer, 0, readLength));
 				}

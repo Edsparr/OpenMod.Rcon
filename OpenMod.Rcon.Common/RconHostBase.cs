@@ -22,11 +22,11 @@ namespace OpenMod.Rcon.Common
     public abstract class RconHostBase : IRconHost
     {
         private readonly ILifetimeScope scope;
-        private readonly ILogger<RconHostBase> logger;
+        private readonly ILogger<IRconHost> logger;
         private readonly IConfiguration configuration;
         
         public RconHostBase(ILifetimeScope scope,
-            ILogger<RconHostBase> logger,
+            ILogger<IRconHost> logger,
             IConfiguration configuration)
         {
             this.scope = scope;
@@ -68,11 +68,16 @@ namespace OpenMod.Rcon.Common
             connections.Clear();
         }
 
-        protected virtual async Task ClientConnected(IAsyncTcpClient arg)
+        protected virtual IAsyncTcpClient Build(TcpClient tcpClient) => new AsyncTcpClient(tcpClient);
+
+        protected virtual async Task<IAsyncTcpClient> ClientConnected(TcpClient arg)
         {
+            var client = Build(arg);
+
             var connectionScope = scope.BeginLifetimeScope(builder => 
             {
-                builder.RegisterInstance(arg);
+                builder.RegisterInstance(client)
+                .As<IAsyncTcpClient>();
 
                 RegisterPacketSerializer(builder);
                 RegisterConnection(builder);
@@ -87,6 +92,8 @@ namespace OpenMod.Rcon.Common
             await connection.Start();
 
             logger.LogDebug("Rcon client connected.");
+
+            return client;
         }
 
 
