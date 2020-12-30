@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Features.AttributeFilters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,12 +18,8 @@ using System.Threading.Tasks;
 
 namespace OpenMod.Rcon
 {
-    public interface IOpenModRconHost : IRconHost //Sometimes marker interfaces are okay...
-    {
 
-    }
-
-    public class OpenModRconHost : RconHostBase, IOpenModRconHost
+    public class OpenModRconHost : RconHostBase
     {
         public OpenModRconHost(ILifetimeScope scope, ILogger<IRconHost> logger, IConfiguration configuration) : base(scope, logger, configuration)
         {
@@ -32,6 +29,7 @@ namespace OpenMod.Rcon
         protected override void RegisterConnection(ContainerBuilder builder)
         {
             builder.RegisterType<OpenModRconConnection>()
+                .WithAttributeFiltering()
                 .As<IRconConnection>()
                 .InstancePerLifetimeScope();
         }

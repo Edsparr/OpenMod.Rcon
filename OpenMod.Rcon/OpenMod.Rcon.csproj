@@ -2,15 +2,28 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageLicenseExpression>EUPL-1.2</PackageLicenseExpression>
-    <PackageTags>openmod openmod-plugin universal</PackageTags>
     <RootNamespace>OpenMod.Rcon</RootNamespace>
     <AssemblyName>OpenMod.Rcon</AssemblyName>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateNugetPackage>true</GenerateNugetPackage>
     <Product>OpenMod Rcon plugin</Product>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>OpenMod.Rcon</PackageId>
+    <!-- must be unique, should be same as your plugin ID -->
+    <PackageDescription>Valve Rcon protocol implementation for OpenMod</PackageDescription>
+    <PackageLicenseExpression>EUPL-1.2</PackageLicenseExpression>
+    <!-- see https://spdx.org/licenses/ -->
+    <PackageAuthor>Your name</PackageAuthor>
+    <PackageTags>openmod openmod-plugin XXX</PackageTags>
+    <!-- XXX can be unturned, unityengine or universal depending on your plugin -->
+    <Version>x.x.x</Version>
+    <!-- Your plugins version. Must be semversion, see https://semver.org/ -->
+    <AssemblyVersion>x.x.x</AssemblyVersion>
+    <!-- set same as package version, required for dynamicalliy updating your plugin -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateNugetPackage>true</GenerateNugetPackage>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="OpenMod.Core" Version="2.3.8" />
   </ItemGroup>

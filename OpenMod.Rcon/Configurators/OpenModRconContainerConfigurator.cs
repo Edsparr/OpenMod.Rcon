@@ -13,7 +13,8 @@ namespace OpenMod.Rcon.Configurators
     {
         public void ConfigureContainer(IOpenModServiceConfigurationContext openModStartupContext, ContainerBuilder containerBuilder)
         {
-            containerBuilder.Register<IOpenModRconHost>(context => ActivatorUtilities.CreateInstance<OpenModRconHost>(context.Resolve<IServiceProvider>())); //Can't make it work without it.
+            containerBuilder.Register<OpenModRconHost>(context => ActivatorUtilities.CreateInstance<OpenModRconHost>(context.Resolve<IServiceProvider>()))
+                .Keyed<IRconHost>(nameof(OpenModRconHost)); //Can't make it work without it.
         }
     }
 }

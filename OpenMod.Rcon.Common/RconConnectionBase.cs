@@ -66,6 +66,8 @@ namespace OpenMod.Rcon.Common
             tcpClient.Closed = (client) => Disconnected?.Invoke(this);
 
             await tcpClient.Start();
+            
+            OpenMod.Core.
         }
 
 

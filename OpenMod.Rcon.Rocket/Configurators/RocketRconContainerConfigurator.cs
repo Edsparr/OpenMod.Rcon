@@ -16,7 +16,8 @@ namespace OpenMod.Rcon.Rocket.Configurators
         public void ConfigureContainer(IOpenModServiceConfigurationContext openModStartupContext, ContainerBuilder containerBuilder)
         {
 
-            containerBuilder.Register<IRocketRconHost>(context => ActivatorUtilities.CreateInstance<RocketRconHost>(context.Resolve<IServiceProvider>())); //Can't make it work without it.
+            containerBuilder.Register<IRconHost>(context => ActivatorUtilities.CreateInstance<RocketRconHost>(context.Resolve<IServiceProvider>()))
+                .Keyed<IRconHost>(nameof(RocketRconHost)); //Can't make it work without it.
 
         }
     }

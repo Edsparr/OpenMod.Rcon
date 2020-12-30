@@ -11,10 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMod.Rcon.Api", "OpenMod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMod.Rcon.Common", "OpenMod.Rcon.Common\OpenMod.Rcon.Common.csproj", "{F89D60F5-9D6D-4511-940E-6EF30BD68036}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9C42B8D7-D6FB-41EA-AD3E-E57EC3981B57}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMod.Rcon.Tests", "OpenMod.Rcon.Tests\OpenMod.Rcon.Tests.csproj", "{564F9137-86CF-49D6-96BD-FDFBE335DA46}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMod.Rcon.Rocket", "OpenMod.Rcon.Rocket\OpenMod.Rcon.Rocket.csproj", "{4532B29D-89D9-4C61-AA23-42F6B5548F62}"
 EndProject
 Global
@@ -35,10 +31,6 @@ Global
 		{F89D60F5-9D6D-4511-940E-6EF30BD68036}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F89D60F5-9D6D-4511-940E-6EF30BD68036}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F89D60F5-9D6D-4511-940E-6EF30BD68036}.Release|Any CPU.Build.0 = Release|Any CPU
-		{564F9137-86CF-49D6-96BD-FDFBE335DA46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{564F9137-86CF-49D6-96BD-FDFBE335DA46}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{564F9137-86CF-49D6-96BD-FDFBE335DA46}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{564F9137-86CF-49D6-96BD-FDFBE335DA46}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4532B29D-89D9-4C61-AA23-42F6B5548F62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4532B29D-89D9-4C61-AA23-42F6B5548F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4532B29D-89D9-4C61-AA23-42F6B5548F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -49,7 +41,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{73DDFF1E-1B3F-4FD1-A1DE-CA826102B6B7} = {A46F348F-2A8F-417D-9908-FAD3D34168E0}
-		{564F9137-86CF-49D6-96BD-FDFBE335DA46} = {9C42B8D7-D6FB-41EA-AD3E-E57EC3981B57}
 		{4532B29D-89D9-4C61-AA23-42F6B5548F62} = {A46F348F-2A8F-417D-9908-FAD3D34168E0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

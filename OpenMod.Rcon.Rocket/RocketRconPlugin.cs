@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using OpenMod.Core.Plugins;
 using OpenMod.API.Plugins;
 using OpenMod.Rcon.Api;
+using Autofac.Features.AttributeFilters;
+using Autofac;
 
 [assembly: PluginMetadata("OpenMod.Rcon.Rocket", DisplayName = "Legacy Rocketmod Rcon")]
 namespace OpenMod.Rcon.Rocket
@@ -16,18 +18,18 @@ namespace OpenMod.Rcon.Rocket
         private readonly IStringLocalizer m_StringLocalizer;
         private readonly ILogger<RocketRconPlugin> m_Logger;
         
-        private readonly IRocketRconHost rconHost;
+        private readonly IRconHost rconHost;
         
         public RocketRconPlugin(
             IConfiguration configuration, 
             IStringLocalizer stringLocalizer,
             ILogger<RocketRconPlugin> logger,
-            IRocketRconHost rconHost,
+            ILifetimeScope lifetime,
             IServiceProvider serviceProvider) : base(serviceProvider)
         {
             m_Configuration = configuration;
             m_StringLocalizer = stringLocalizer;
-            this.rconHost = rconHost;
+            this.rconHost = lifetime.ResolveKeyed<IRconHost>(nameof(RocketRconHost));
             m_Logger = logger;
             
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Autofac.Features.AttributeFilters;
+using Microsoft.Extensions.Logging;
 using OpenMod.API.Commands;
 using OpenMod.Rcon.Api;
 using OpenMod.Rcon.Api.Packets;
@@ -13,7 +14,7 @@ namespace OpenMod.Rcon
 {
     public class OpenModRconConnection : RconConnectionBase
     {
-        public OpenModRconConnection(IOpenModRconHost host,
+        public OpenModRconConnection([KeyFilter(nameof(OpenModRconHost))] IRconHost host,
             IPacketSerializer packetSerializer, 
             IAsyncTcpClient tcpClient, 
             ICommandExecutor commandExecutor,

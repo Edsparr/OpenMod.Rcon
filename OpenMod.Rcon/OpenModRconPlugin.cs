@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using OpenMod.Core.Plugins;
 using OpenMod.API.Plugins;
 using OpenMod.Rcon.Api;
+using Autofac;
 
 [assembly: PluginMetadata("OpenMod.Rcon", DisplayName = "OpenMod Rcon")]
 namespace OpenMod.Rcon
@@ -16,18 +17,18 @@ namespace OpenMod.Rcon
         private readonly IStringLocalizer m_StringLocalizer;
         private readonly ILogger<OpenModRconPlugin> m_Logger;
         
-        private readonly IOpenModRconHost rconHost;
+        private readonly IRconHost rconHost;
         
         public OpenModRconPlugin(
             IConfiguration configuration, 
             IStringLocalizer stringLocalizer,
             ILogger<OpenModRconPlugin> logger,
-            IOpenModRconHost rconHost,
+            ILifetimeScope lifetime,
             IServiceProvider serviceProvider) : base(serviceProvider)
         {
             m_Configuration = configuration;
             m_StringLocalizer = stringLocalizer;
-            this.rconHost = rconHost;
+            this.rconHost = this.rconHost = lifetime.ResolveKeyed<IRconHost>(nameof(OpenModRconHost));
             m_Logger = logger;
             
         }
